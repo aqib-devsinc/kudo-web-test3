@@ -1,0 +1,141 @@
+#!groovy
+
+import groovy.json.JsonOutput
+import java.util.Optional
+import java.text.SimpleDateFormat
+import hudson.model.Actionable
+import hudson.tasks.junit.CaseResult
+
+def message = ""
+def testSummary = ""
+def date = new Date()
+def sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss")
+def slackNotificationChannel = "#kai-ci"
+def target_environment = targetEnvironment
+def target_bucket
+
+def notifySlack(text, channel, attachments) {
+    def slackURL = 'https://hooks.slack.com/services/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'
+
+    def payload = JsonOutput.toJson([text: text,
+        channel: channel,
+        username: "Jenkins",
+        icon_emoji: ":jenkins:",
+        attachments: attachments
+    ])
+
+    sh "curl -X POST --data-urlencode \'payload=${payload}\' ${slackURL}"
+}
+
+def remote = [:]
+
+node {
+  try {
+
+   stage('SCM Pull') {
+        checkout scm
+   }
+
+    stage ('Clean up') {
+        sh "sudo rm -rf ./build"
+    }
+
+    stage ('Copy application configuration') {
+        sh "cp .ci/env_${target_environment} .env.${target_environment}"
+    }
+
+    stage ('Docker build') {
+        sh "docker build -t kai-web-cd:$BUILD_NUMBER ."
+    }
+
+
+    stage ('NPM build') {
+        sh "docker run --rm -v $WORKSPACE/build:/app/build kai-web-cd:$BUILD_NUMBER npm run build:${target_environment}"
+    }
+
+    stage ('Upload to S3') {
+      switch(target_environment) {
+        case "sandbox":
+          target_bucket = "kai-web-app"
+          break;
+        case "beta":
+          target_bucket = "kai-beta-app"
+          break;
+        case "preprod":
+          target_bucket = "kai-preprod-app"
+          break;
+      case "beta_live":
+          target_bucket = "kai-test-preprod-app"
+          break;
+        default:
+          println("Something went wrong");
+          println(${target_bucket});
+          break;
+      }
+        sh "docker run --rm -v $WORKSPACE/build:/app/build -v ~/.aws:/root/.aws amazon/aws-cli s3 sync /app/build s3://${target_bucket}/ --profile jenkins"
+    }
+
+    stage ('Slack notification') {
+
+            def buildColor = currentBuild.result == null ? "good" : "warning"
+            def buildStatus = currentBuild.result == null ? "Success" : currentBuild.result
+            def jobName = "${env.JOB_NAME}"
+            def buildTime = sdf.format(date)
+
+            notifySlack("", slackNotificationChannel, [
+                [
+                    title: "${target_environment}-${jobName}, build #${env.BUILD_NUMBER}",
+                    title_link: "${env.BUILD_URL}",
+                    color: "${buildColor}",
+                    text: "${buildStatus}\n${env.BUILD_USER_FIRST_NAME}",
+                    "mrkdwn_in": ["fields"],
+                    fields: [
+                        [
+                            title: "Branch",
+                            value: "${branch}",
+                            short: false
+                        ],
+                        [
+                            title: "Deployment time",
+                            value: "${buildTime}",
+                            short: false
+                        ]
+                    ]
+                ]
+            ])
+        }
+}
+
+catch (err) {
+
+        currentBuild.result = "danger"
+        def buildStatus = "Fail"
+        def buildColor = "#FF0000"
+        def jobName = "${env.JOB_NAME}"
+        def buildTime = sdf.format(date)
+
+        notifySlack("", slackNotificationChannel, [
+            [
+                title: "${jobName}, build #${env.BUILD_NUMBER}",
+                title_link: "${env.BUILD_URL}",
+                color: "${buildColor}",
+                author_name: "${env.BUILD_USER_FIRST_NAME}",
+                text: "${buildStatus}\n${env.BUILD_USER_FIRST_NAME}",
+                fields: [
+                    [
+                        title: "Branch",
+                        value: "${branch}",
+                        short: false
+                    ],
+                    [
+                        title: "Deployment time",
+                        value: "${buildTime}",
+                        short: false
+                    ]
+                ]
+            ]
+        ])
+
+  throw err
+}
+}

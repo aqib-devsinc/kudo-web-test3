@@ -1,0 +1,99 @@
+{
+  "extends": [
+    "airbnb",
+    "airbnb/hooks",
+    "plugin:jest/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "rules": {
+    "react/jsx-filename-extension": [
+      0
+    ],
+    "import/extensions": "off",
+    "camelcase": "off",
+    "array-callback-return": "off",
+    "no-param-reassign": "off",
+    "import/no-named-as-default": 0,
+    "import/no-named-as-default-member": 0,
+    "max-len": [
+      "error",
+      {
+        "code": 120
+      }
+    ],
+    "jsx-a11y/label-has-associated-control": [
+      "error",
+      {
+        "required": {
+          "some": [
+            "nesting",
+            "id"
+          ]
+        }
+      }
+    ],
+    "jsx-a11y/label-has-for": [
+      "error",
+      {
+        "required": {
+          "some": [
+            "nesting",
+            "id"
+          ]
+        }
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      "LabeledStatement",
+      "WithStatement"
+    ],
+    "import/prefer-default-export": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "off",
+    "linebreak-style": "off",
+    "object-curly-newline": ["error", {
+      "ObjectExpression": { "multiline": true, "minProperties": 2 }
+    }],
+    "consistent-return": "off",
+    "quotes": ["error", "single"],
+    "jsx-quotes": ["error", "prefer-single"],
+    "react/forbid-prop-types": 0,
+    "keyword-spacing": [1, {
+      "before": true,
+      "after": true
+    }],
+    "space-before-blocks": [1, "always"],
+    "no-use-before-define": ["error", {
+      "functions": false
+    }],
+    "react/jsx-no-bind": "off",
+    "react/no-array-index-key": "off",
+    "jsx-a11y/no-noninteractive-element-interactions": 0,
+    "no-unused-vars": 1,
+    "no-debugger": 1,
+    "semi": 0,
+    "indent": ["error", 2, {
+      "ignoredNodes": ["TemplateLiteral"],
+      "SwitchCase": 1
+    }]
+  },
+  "globals": {
+    "localStorage": true,
+    "document": true,
+    "FileReader": true
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx"],
+        "moduleDirectory": ["node_modules", "src"]
+      }
+    }
+  },
+  "env": {
+    "browser": true
+  },
+  "parser": "babel-eslint"
+}

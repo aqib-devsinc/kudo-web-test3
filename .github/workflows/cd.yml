@@ -1,0 +1,44 @@
+name: CD
+on:
+  push:
+    branches:
+      - 'develop'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        id: npm-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: Install Node Packages
+        if: steps.npm-cache.node_modules.cache-hit != 'true'
+        run: npm install
+
+      - name: Run tests
+        run: npm run test
+
+  trigger-build:
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      JENKINS_JOB_URL: https://sandbox-ops.meetkudo.com/view/KUDO%20INTERPRETER%20ASSIST/job/KIA-WEB-CD/buildWithParameters?token=junaid-api-token
+
+    steps:
+      - name: Trigger Jenkins job
+        run: |
+          curl -d '[{"branch": "develop", "targetEnvironment": "sandbox"}]' -XPOST -u junaid.ali@devsinc.com:${{ secrets.JENKINS_NON_PROD_KAI_API_TOKEN }} ${{ env.JENKINS_JOB_URL }}
+
+        shell: bash

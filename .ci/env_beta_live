@@ -1,0 +1,4 @@
+REACT_APP_BASE_API_URL=https://api-assist.meetkudo.com/api
+REACT_APP_SOCKETS_BASE_URL=wss://api-assist.meetkudo.com/wss
+REACT_APP_WIKIPEDIA_URL=https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&list=search
+REACT_APP_VERSION=1.5.0
