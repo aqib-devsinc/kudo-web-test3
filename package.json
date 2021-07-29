@@ -1,6 +1,6 @@
 {
     "name": "demo2",
-    "version": "7.1.2",
+    "version": "1.5.0",
     "private": true,
     "scripts": {
         "start": "react-scripts start -o",
@@ -14,7 +14,15 @@
         "build:beta": "env-cmd -f .env.beta react-scripts build",
         "build:preprod": "env-cmd -f .env.preprod react-scripts build",
         "build:beta_live": "env-cmd -f .env.beta_live react-scripts build",
-        "build:prod": "env-cmd -f .env.production react-scripts build"
+        "build:prod": "env-cmd -f .env.production react-scripts build",
+        "release": "standard-version"
+    },
+    "standard-version": {
+        "skip": {
+            "changelog": true,
+            "tag": true
+        },
+        "release": "standard-version -a"
     },
     "eslintConfig": {
         "extends": "react-app"
@@ -127,6 +135,7 @@
         "prettier": "1.19.1",
         "react-test-renderer": "^17.0.1",
         "serve": "^11.3.2",
+        "standard-version": "^9.3.1",
         "webpack-cli": "3.3.11",
         "webpack-messages": "2.0.4",
         "webpack-rtl-plugin": "2.0.0"
