@@ -27,7 +27,7 @@ import DataTable from '../DataTable';
 
 export default function Projects() {
   const dashboard = useSelector(({ admin }) => admin.dashboard);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(null);
   const [currentPage, setCurrentPage] = useState(ADMIN_PROJECTS_DEFAULT_PAGE);
   const [filterColsMenuAnchorEl, setFilterColsMenuAnchorEl] = useState(null);
   const classes = useStyles();
