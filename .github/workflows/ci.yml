@@ -1,31 +1,31 @@
-name: CI
-on:
-  push:
-    branches-ignore:
-      - 'develop'
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '14'
+# name: CI
+# on:
+#   push:
+#     branches-ignore:
+#       - 'develop'
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v1
+#       - uses: actions/setup-node@v1
+#         with:
+#           node-version: '14'
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        id: npm-cache
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-${{ env.cache-name }}-
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}-
+#       - name: Cache node modules
+#         uses: actions/cache@v2
+#         id: npm-cache
+#         with:
+#           path: node_modules
+#           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+#           restore-keys: |
+#             ${{ runner.OS }}-build-${{ env.cache-name }}-
+#             ${{ runner.OS }}-build-
+#             ${{ runner.OS }}-
 
-      - name: Install Node Packages
-        if: steps.npm-cache.node_modules.cache-hit != 'true'
-        run: npm install
+#       - name: Install Node Packages
+#         if: steps.npm-cache.node_modules.cache-hit != 'true'
+#         run: npm install
 
-      - name: Run tests
-        run: npm run test
+#       - name: Run tests
+#         run: npm run test
