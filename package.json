@@ -1,6 +1,6 @@
 {
     "name": "demo2",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "private": true,
     "scripts": {
         "start": "react-scripts start -o",
@@ -18,10 +18,6 @@
         "release": "standard-version"
     },
     "standard-version": {
-        "skip": {
-            "changelog": true,
-            "tag": true
-        },
         "release": "standard-version -a"
     },
     "eslintConfig": {
